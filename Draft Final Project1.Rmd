@@ -138,11 +138,9 @@ get_wmata_data <- function(pdflink) {
 # way to iterate through them to get multiple files at one go.
 
 url <- "https://www.wmata.com/about/transit-police/upload/Monthly-Blotter-"
-time_periods <- c("October-2021","September-2021", "August-2021", "July-2021", "June-2021","May-2021","April-2021","March-2021","February-2021","January-2021")
+time_periods <- c("October-2021","September-2021", "August-2021", "July-2021", "June-2021","May-2021","April-2021","March-2021","February-2021","January-2021","December-2020","November-2020","October-2020","September-2020", "August-2020")
 
-url <- "https://www.wmata.com/about/transit-police/upload/Monthly-Blotter-"
-
-time_periods <- c("December-2020","November-2020","October-2020","September-2020", "August-2020", "July-2020", "June-2020","May-2020","April-2020","March-2020","February-2020","January-2020")
+url <-"https://www.wmata.com/about/transit-police/upload/June-2020-Blotter-Report"
 
 df_prev = ""
 
@@ -165,9 +163,96 @@ tail(df_wmata)
 
 ```
 
-# Create Plot
+## Clean the WMATA data with NA's
 ```{r}
-df.groupby('year').type.value_counts().unstack(0).plot.barh()
+
+```
+
+# Create Groupby Year & State (test)
+```{r}
+df_state<- df_wmata %>%
+group_by(year) %>%
+select(DC,MD,VA)
+summarize(sum = sum(state), count = n()) %>%
+arrange(year, state)
+
+df_state
+```
+
+# Create Plot on the Crimes Committed by State
+```{r}
+
+```
+# Creat a Groupby type & count (tester)
+```{r}
+df_wmata %>%                         # Count rows by group
+  group_by(type) %>% 
+  summarize(n = n())
+```
+
+```{r}
+df_type <-df_wmata
+  group_by(type)
+df_type
+```
+
+```{r}
+df_type<- df_wmata %>%
+ group_by(type) %>%
+    summarize(count=n())
+
+```
+
+# Create Plot on Type of Crimes by Type
+```{r}
+ggplot(df_wmata, aes(x=type, fill=type )) + 
+  geom_bar( ) +
+  scale_fill_hue(c = 40) +
+  theme(legend.position="none")
+```
+
+# Create Plot on 
+```{r}
+
+```
+
+
+#Census Data 
+```{r}
+library(httr)
+library(jsonlite)
+library(tidyverse)
+
+# Import json data from Census API
+data <- GET("https://api.census.gov/data/2019/acs/acs1/?get=NAME,B01001_001E,B01002_001E,C22001_001E,B25064_001E&for=county:*&in=state:24")
+data <- content(data, as="text")
+
+# Load into a data frame
+df <- fromJSON(data)
+class(df)
+head(df)
+
+# Change to tibble
+df <- as_tibble(df)
+head(df)
+
+# Make first row column header names
+names(df) <- c(df[1,])
+head(df)
+
+# Keep all but first row (which had the column header names)
+df <- df[-1,]
+head(df)
+
+# Rename columns as needed
+names(df) <- c('NAME',
+               'B01001_001E' = 'Population',
+               'B01002_001E' = 'Median_Age',
+               'C22001_001E' = 'Household_Poverty',
+               'B25064_001E' = 'Median_Gross_Rent',
+               'state',
+               'county')
+head(df)
 
 ```
 
