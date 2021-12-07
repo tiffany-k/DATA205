@@ -129,7 +129,7 @@ get_wmata_data <- function(pdflink) {
 # way to iterate through them to get multiple files at one go.
 
 url <- "https://www.wmata.com/about/transit-police/upload/Monthly-Blotter-"
-time_periods <- c("October-2021","September-2021", "August-2021", "July-2021", "June-2021","May-2021","April-2021","March-2021","February-2021","January-2021","December-2020","November-2020","October-2020","September-2020","August-2020","May-2020","April-2020","March-2020","February-2020","January-2020","December-2019","November-2019","October-2019","June-2019","November-2018")
+time_periods <- c("October-2021","September-2021", "August-2021", "July-2021", "June-2021","May-2021","April-2021","March-2021","February-2021","January-2021","December-2020","November-2020","October-2020","September-2020","August-2020","May-2020","April-2020","March-2020","February-2020","January-2020","December-2019","November-2019","October-2019","June-2019","November-2018","March-2018","February-2018","January-2018","October-2017","September-2017")
 
  
 url_exception_june_2020<-"https://www.wmata.com/about/transit-police/upload/June-2020-Blotter-Report.pdf"
@@ -138,35 +138,77 @@ df_exception_June_2020 <- get_wmata_data(url_exception_june_2020)
 url_exception_july_2020<-"https://www.wmata.com/about/transit-police/upload/July-2020-Blotter.pdf"
 df_exception_July_2020 <- get_wmata_data(url_exception_july_2020)
 
+url_exception_september_2019<-"https://www.wmata.com/about/transit-police/upload/September-2019-Monthly-Blotter.pdf"
+df_exception_September_2019 <- get_wmata_data(url_exception_september_2019)
+
+url_exception_august_2019<-"https://www.wmata.com/about/transit-police/upload/August-2019-Monthly-Blotter.pdf"
+df_exception_August_2019 <- get_wmata_data(url_exception_august_2019)
+
 url_exception_july_2019<-"https://www.wmata.com/about/transit-police/upload/July-2019-Blotter.pdf"
-df_exception_July_2019 <- get_wmata_data(url_exception_July_2019)
+df_exception_July_2019 <- get_wmata_data(url_exception_july_2019)
 
 url_exception_may_2019<-"https://www.wmata.com/about/transit-police/upload/May-2019-Blotter-Report.pdf"
-df_exception_May_2019 <- get_wmata_data(url_exception_May_2019)
+df_exception_May_2019 <- get_wmata_data(url_exception_may_2019)
 
 url_exception_april_2019<-"https://www.wmata.com/about/transit-police/upload/Blotter-Report-April-2019.pdf"
-df_exception_April_2019 <- get_wmata_data(url_exception_April_2019)
+df_exception_April_2019 <- get_wmata_data(url_exception_april_2019)
 
 url_exception_march_2019<-"https://www.wmata.com/about/transit-police/upload/2019-March-Blotter-Report.pdf"
-df_exception_March_2019 <- get_wmata_data(url_exception_March_2019)
+df_exception_March_2019 <- get_wmata_data(url_exception_march_2019)
 
 url_exception_february_2019<-"https://www.wmata.com/about/transit-police/upload/February-2019-Monthly-Blotter-Report.pdf"
-df_exception_February_2019 <- get_wmata_data(url_exception_February_2019)
+df_exception_February_2019 <- get_wmata_data(url_exception_february_2019)
 
 url_exception_january_2019<-"https://www.wmata.com/about/transit-police/upload/January-2019-Monthly-Blotter-Report.pdf"
-df_exception_January_2019 <- get_wmata_data(url_exception_January_2019)
+df_exception_January_2019 <- get_wmata_data(url_exception_january_2019)
 
 url_exception_december_2018<-"https://www.wmata.com/about/transit-police/upload/Monthly-Blotter-2018-December.pdf"
-df_exception_December_2018 <- get_wmata_data(url_exception_December_2018)
-
-url_exception_october_2018<-"https://www.wmata.com/about/transit-police/upload/October-2018-Monthly-Crime-Blotter.pdf"
-df_exception_October_2018 <- get_wmata_data(url_exception_October_2018)
+df_exception_December_2018 <- get_wmata_data(url_exception_december_2018)
 
 url_exception_september_2018<-"https://www.wmata.com/about/transit-police/upload/September-2018-Blotter.pdf"
-df_exception_September_2018 <- get_wmata_data(url_exception_September_2018)
+df_exception_September_2018 <- get_wmata_data(url_exception_september_2018)
 
 url_exception_august_2018<-"https://www.wmata.com/about/transit-police/upload/August-2018-Monthly-Blotter.pdf"
-df_exception_August_2018 <- get_wmata_data(url_exception_August_2018)
+df_exception_August_2018 <- get_wmata_data(url_exception_august_2018)
+
+url_exception_july_2018<-"https://www.wmata.com/about/transit-police/upload/July-2018-Blotter.pdf"
+df_exception_July_2018 <- get_wmata_data(url_exception_july_2018)
+
+url_exception_june_2018<-"https://www.wmata.com/about/transit-police/upload/June-2016-Blotter.pdf"
+df_exception_June_2018 <- get_wmata_data(url_exception_june_2018)
+
+url_exception_may_2018<-"https://www.wmata.com/about/transit-police/upload/May-Monthly-blotter-2018.pdf"
+df_exception_May_2018 <- get_wmata_data(url_exception_may_2018)
+
+url_exception_april_2018<-"https://www.wmata.com/about/transit-police/upload/April-Monthly-blotter.pdf"
+df_exception_April_2018 <- get_wmata_data(url_exception_april_2018)
+
+url_exception_december_2017<-"https://www.wmata.com/about/transit-police/upload/December-Monthly-Blotter.pdf"
+df_exception_December_2017 <- get_wmata_data(url_exception_december_2017)
+
+url_exception_november_2017<-"https://www.wmata.com/about/transit-police/upload/November-Monthly-Blotter.pdf"
+df_exception_November_2017 <- get_wmata_data(url_exception_november_2017)
+
+url_exception_august_2017<-"https://www.wmata.com/about/transit-police/upload/Monthly-Blotter-Report-August-2017.pdf"
+df_exception_August_2017 <- get_wmata_data(url_exception_august_2017)
+
+url_exception_july_2017<-"https://www.wmata.com/about/transit-police/upload/Monthly-Blotter-Report-July-2017.pdf"
+df_exception_July_2017 <- get_wmata_data(url_exception_july_2017)
+
+url_exception_june_2017<-"https://www.wmata.com/about/transit-police/upload/June-2017-blotter.pdf"
+df_exception_June_2017 <- get_wmata_data(url_exception_june_2017)
+
+url_exception_april_2017<-"https://www.wmata.com/about/transit-police/upload/April-2017-monthly-blotter.pdf"
+df_exception_April_2017 <-get_wmata_data(url_exception_april_2017)
+
+url_exception_march_2017<-"https://www.wmata.com/about/transit-police/upload/March-2017-monthly-blotter.pdf"
+df_exception_March_2017 <-get_wmata_data(url_exception_march_2017)
+
+url_exception_february_2017<-"https://www.wmata.com/about/transit-police/upload/January-2017-monthly-blotter.pdf"
+df_exception_February_2017 <-get_wmata_data(url_exception_february_2017)
+
+url_exception_january_2017<-"https://www.wmata.com/about/transit-police/upload/Monthly-Blotter_February-2017.pdf"
+df_exception_January_2017 <-get_wmata_data(url_exception_january_2017)
 
 df_prev = ""
 
@@ -179,7 +221,8 @@ for (time_period in time_periods) {
     df_prev <- df_curr
     df_wmata <- df_prev
   } else {
-    df_wmata <- bind_rows(df_wmata, df_curr,url_exception_june_2020,url_exception_june_2020,url_exception_march_2019,url_exception_february_2019,url_exception_january_2019,url_exception_december_2018,url_exception_october_2018,url_exception_september_2018,url_exception_august_2018)
+    df_wmata <- bind_rows(df_wmata,df_curr,df_exception_June_2020,df_exception_July_2020,df_exception_September_2019,df_exception_August_2019,df_exception_March_2019,df_exception_February_2019,df_exception_January_2019,df_exception_December_2018,df_exception_September_2018,df_exception_August_2018,df_exception_July_2018, df_exception_June_2018,df_exception_May_2018,df_exception_April_2018,df_exception_December_2017,df_exception_November_2017,df_exception_August_2017,df_exception_July_2017,df_exception_June_2017,df_exception_April_2017,df_exception_March_2017,df_exception_February_2017,df_exception_January_2017)
+    
   }
 }
 
@@ -188,10 +231,41 @@ df_wmata
 tail(df_wmata)
 
 ```
+## View df_wmata Data 
+```{r}
+view(df_wmata)
+```
+
+## Summary
+```{r}
+summary(df_wmata)
+```
+
+## Get rid of NAs
+```{r}
+WMATA <-na.omit(df_wmata)
+```
+
+## 
+```{r}
+tuition$tuition$name[grepl('State University of New York', tuition$name)] <- 
+```
+
+
+## Two links that will not load & has an error
+```{r}
+
+url_exception_october_2018<-"https://www.wmata.com/about/transit-police/upload/October-2018-Monthly-Crime-Blotter.pdf"
+df_exception_October_2018 <- get_wmata_data(url_exception_october_2018)
+
+url_exception_may_2017<-"https://www.wmata.com/about/transit-police/upload/May-2017-Blotter.pdf"
+df_exception_May_2017 <- get_wmata_data(url_exception_may_2017)
+
+```
 
 
 ```{r}
-
+,url_exception_june_2020,url_exception_july_2020,url_exception_september_2019,url_exception_august_2019,url_exception_july_2019,url_exception_march_2019,url_exception_february_2019,url_exception_january_2019,url_exception_december_2018,url_exception_september_2018,url_exception_august_2018,url_exception_july_2018,url_exception_june_2018,url_exception_may_2018,url_exception_april_2018,url_exception_december_2017,url_exception_november_2017,url_exception_june_2017,url_exception_april_2017,url_exception_march_2017,url_exception_january_2017
 ```
 
 ## Clean the WMATA data with NA's
@@ -285,5 +359,34 @@ names(df) <- c('NAME',
                'county')
 head(df)
 
+```
+
+
+## Remove Crimes Data 
+```{r}
+na.omit(crimes)
+```
+
+```{r}
+view(crimes)
+```
+
+```{r}
+names(crimes)[names(crimes) == 'Crime Name1'] <- 'Offenses'
+```
+
+```{r}
+P1<-crimes %>%                        
+  group_by(type) %>% 
+  select("")
+  summarize(n = n())
+P1
+```
+
+```{r}
+ggplot(crimes, aes(x=Offenses, fill=Offenses)) + 
+  geom_bar( ) +
+  scale_fill_hue(c = 40) +
+  theme(legend.position="none")
 ```
 
