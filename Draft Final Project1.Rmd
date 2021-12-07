@@ -246,9 +246,46 @@ summary(df_wmata)
 WMATA <-na.omit(df_wmata)
 ```
 
-## 
+## Rename variables (State)
 ```{r}
-tuition$tuition$name[grepl('State University of New York', tuition$name)] <- 
+WMATA$state[grepl('PG',WMATA$state)]<- 'MD'
+WMATA$state[grepl('MC',WMATA$state)]<- 'MD'
+WMATA$state[grepl('RL',WMATA$state)]<- 'VA'
+WMATA$state[grepl('EX',WMATA$state)]<- 'VA'
+```
+
+## Create a New Column and Add Months and years to WMATA DataSet 
+```{r}
+mutate(date=as.Date(date,format="%Y"))
+```
+
+## Groupby Time Series( Define Time (Morning, DayTime, Night)
+
+```{r}
+#Create a time series 
+```
+
+
+## Plot 1
+```{r}
+p1<-WMATA  %>%
+  filter(state %in% c("DC","MD","VA")) %>%
+  ggplot(aes(x=state, fill= state))+
+  geom_bar()+
+  labs(title="Total of Crimes by State/District",x="State/District", y="Total")+
+  scale_fill_brewer(palette = "Dark2") + theme_minimal()
+p1 + theme_minimal()
+```
+
+## Plot Types of Crime
+```{r}
+p2<-WMATA  %>%
+  filter(type %in% c("ARREST","REPORT","SUMMONS/CITATION")) %>%
+  ggplot(aes(x=type, fill= type))+
+  geom_bar()+
+  labs(title="Classification of Type of Crime/ Reporting",x="Type", y="Total")+
+  scale_fill_brewer(palette = "Blues") + theme_minimal()
+p2 + theme_minimal()
 ```
 
 
@@ -263,26 +300,6 @@ df_exception_May_2017 <- get_wmata_data(url_exception_may_2017)
 
 ```
 
-
-```{r}
-,url_exception_june_2020,url_exception_july_2020,url_exception_september_2019,url_exception_august_2019,url_exception_july_2019,url_exception_march_2019,url_exception_february_2019,url_exception_january_2019,url_exception_december_2018,url_exception_september_2018,url_exception_august_2018,url_exception_july_2018,url_exception_june_2018,url_exception_may_2018,url_exception_april_2018,url_exception_december_2017,url_exception_november_2017,url_exception_june_2017,url_exception_april_2017,url_exception_march_2017,url_exception_january_2017
-```
-
-## Clean the WMATA data with NA's
-```{r}
-
-```
-
-# Create Groupby Year & State (test)
-```{r}
-df_state<- df_wmata %>%
-group_by(year) %>%
-select(DC,MD,VA)
-summarize(sum = sum(state), count = n()) %>%
-arrange(year, state)
-
-df_state
-```
 
 # Create Plot on the Crimes Committed by State
 ```{r}
