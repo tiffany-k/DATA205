@@ -254,16 +254,15 @@ WMATA$state[grepl('RL',WMATA$state)]<- 'VA'
 WMATA$state[grepl('EX',WMATA$state)]<- 'VA'
 ```
 
-## Create a New Column and Add Months and years to WMATA DataSet 
+## Separate year from date
 ```{r}
-WMATA$year <- as.numeric(format(WMATA$date, "%Y"))
-head(WMATA)
+
 ```
 
 ## Groupby Time Series( Define Time (Morning, DayTime, Night)
 
 ```{r}
-#Create a time series 
+#Create a time series plot
 ```
 
 
@@ -288,7 +287,18 @@ p2<-WMATA  %>%
   scale_fill_brewer(palette = "Blues") + theme_minimal()
 p2 + theme_minimal()
 ```
+## Facet_wrap on the types of reports throughout the years
+```{r}
+ggplot(data = WMATA,
+       mapping = aes(x = date, y = n, color = type)) +
+  geom_line() +
+  facet_grid(rows = vars(type), cols =  vars(genus))
+```
 
+## Create a plot on
+```{r}
+
+```
 
 ## Two links that will not load & has an error
 ```{r}
@@ -300,45 +310,6 @@ url_exception_may_2017<-"https://www.wmata.com/about/transit-police/upload/May-2
 df_exception_May_2017 <- get_wmata_data(url_exception_may_2017)
 
 ```
-
-
-# Create Plot on the Crimes Committed by State
-```{r}
-
-```
-# Creat a Groupby type & count (tester)
-```{r}
-df_wmata %>%                         # Count rows by group
-  group_by(type) %>% 
-  summarize(n = n())
-```
-
-```{r}
-df_type <-df_wmata
-  group_by(type)
-df_type
-```
-
-```{r}
-df_type<- df_wmata %>%
- group_by(type) %>%
-    summarize(count=n())
-
-```
-
-# Create Plot on Type of Crimes by Type
-```{r}
-ggplot(df_wmata, aes(x=type, fill=type )) + 
-  geom_bar( ) +
-  scale_fill_hue(c = 40) +
-  theme(legend.position="none")
-```
-
-# Create Plot on 
-```{r}
-
-```
-
 
 #Census Data 
 ```{r}
@@ -379,32 +350,29 @@ head(df)
 
 ```
 
+## Create on plot on Income & Population(Linear Regression/ Scatterplot with Population)
+```{r}
+
+```
 
 ## Remove Crimes Data 
 ```{r}
-na.omit(crimes)
+Moco_crimes<-na.omit(crimes)
 ```
 
+## Plot on Classifcation of Crime
 ```{r}
-view(crimes)
+c1<-crimes  %>%
+  filter(`Crime Name1` %in% c("Crime Against Person ","Crime Against Property","Crime Against Society")) %>%
+  ggplot(aes(x=`Crime Name1`, fill=`Crime Name1`))+
+  geom_bar()+
+  labs(title="Classification of Crime",x="", y="Total")+
+  scale_fill_brewer(palette = "Accent") + theme_minimal()
+c1 + theme_minimal()
 ```
 
+## 
 ```{r}
-names(crimes)[names(crimes) == 'Crime Name1'] <- 'Offenses'
-```
 
-```{r}
-P1<-crimes %>%                        
-  group_by(type) %>% 
-  select("")
-  summarize(n = n())
-P1
-```
-
-```{r}
-ggplot(crimes, aes(x=Offenses, fill=Offenses)) + 
-  geom_bar( ) +
-  scale_fill_hue(c = 40) +
-  theme(legend.position="none")
 ```
 
