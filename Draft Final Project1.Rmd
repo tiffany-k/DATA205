@@ -256,7 +256,8 @@ WMATA$state[grepl('EX',WMATA$state)]<- 'VA'
 
 ## Create a New Column and Add Months and years to WMATA DataSet 
 ```{r}
-mutate(date=as.Date(date,format="%Y"))
+WMATA$year <- as.numeric(format(WMATA$date, "%Y"))
+head(WMATA)
 ```
 
 ## Groupby Time Series( Define Time (Morning, DayTime, Night)
