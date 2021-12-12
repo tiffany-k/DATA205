@@ -130,8 +130,9 @@ get_wmata_data <- function(pdflink) {
 
 url <- "https://www.wmata.com/about/transit-police/upload/Monthly-Blotter-"
 time_periods <- c("October-2021","September-2021", "August-2021", "July-2021", "June-2021","May-2021","April-2021","March-2021","February-2021","January-2021","December-2020","November-2020","October-2020","September-2020","August-2020","May-2020","April-2020","March-2020","February-2020","January-2020","December-2019","November-2019","October-2019","June-2019","November-2018","March-2018","February-2018","January-2018","October-2017","September-2017")
+```
 
- 
+```{r}
 url_exception_june_2020<-"https://www.wmata.com/about/transit-police/upload/June-2020-Blotter-Report.pdf"
 df_exception_June_2020 <- get_wmata_data(url_exception_june_2020)
 
@@ -231,6 +232,7 @@ df_wmata
 tail(df_wmata)
 
 ```
+
 ## View df_wmata Data 
 ```{r}
 view(df_wmata)
@@ -256,15 +258,25 @@ WMATA$state[grepl('EX',WMATA$state)]<- 'VA'
 
 ## Separate year from date
 ```{r}
-
+WMATA$date <- as.Date(WMATA$date, format="%m/%d/%Y")
+head(WMATA)      
 ```
 
-## Groupby Time Series( Define Time (Morning, DayTime, Night)
+```{r}
+WMATA$year<-as.numeric(format(WMATA$date,"%Y"))
+head(WMATA)
+```
+
+
+## Groupby Time Series( Define Time (Morning, Afternoon ,Evening, Night)
 
 ```{r}
 #Create a time series plot
+WMATA$hour <- as.numeric(gsub(":.*$", "", WMATA$time))
+WMATA$cat <- with(WMATA,  ifelse(hour >= 5 & hour<=11, "morning",
+                            ifelse(hour>11 & hour<=16, "evening", "night")))
+WMATA
 ```
-
 
 ## Plot 1
 ```{r}
@@ -287,17 +299,73 @@ p2<-WMATA  %>%
   scale_fill_brewer(palette = "Blues") + theme_minimal()
 p2 + theme_minimal()
 ```
-## Facet_wrap on the types of reports throughout the years
+
+##Prepare the Data
 ```{r}
-ggplot(data = WMATA,
-       mapping = aes(x = date, y = n, color = type)) +
-  geom_line() +
-  facet_grid(rows = vars(type), cols =  vars(genus))
+DMV<-WMATA %>%
+  select(type,year)%>%
+  filter(year >=2017  & type %in% c("ARREST","REPORT","SUMMONS/CITATION"))%>%
+  group_by(year)
 ```
 
-## Create a plot on
 ```{r}
+head(DMV)
+```
 
+## Getting the WMATA Geocodes
+```{r}
+library(dplyr)
+library(stringr)
+library(tidygeocoder)
+
+# Extract the street address from desc using Regex.  Extract crime description also.
+df_wmata2 <- df_wmata %>% mutate(street_addr=str_remove(desc, "[[:upper:]]{2,}.+")) %>%
+  mutate(crime_desc=str_extract(desc, "[[:upper:]]{2,}.+"))
+df_wmata2 <- df_wmata2 %>% mutate(full_addr=paste(street_addr,state))
+
+#Filter on just Maryland addresses
+df_md <- df_wmata2 %>% filter(state=="MD")
+
+#Apply the geocode function to get lat/lon values
+coordinates <- df_md %>% geocode(full_addr)
+```
+
+
+```{r}
+P5<- ggplot(DMV, aes(y =year, fill = factor(type))) +
+  geom_boxplot() +
+  facet_wrap(~type, scale = "free") +
+  scale_y_continuous(name = "Average Life Expectancy") +
+  scale_x_discrete(labels = abbreviate, name = "Continent")
+
+P5
+```
+
+```{r}
+ggplot(DMV, aes(x=type)) + geom_histogram()
+```
+
+```{r}
+ggplot(diamonds, aes(x=price, y=color, fill=color)) +
+```
+
+
+```{r}
+p <- ggplot(DMV, aes(year, type)) + 
+  geom_abline() +
+  geom_jitter(width = 0.1, height = 0.1) 
+p + facet_wrap()
+```
+
+## Facet_wrap on the types of reports throughout the years
+```{r}
+ggplot(data = WMATA, aes(year, n)) +
+  geom_line(color = "steelblue", size = 1) +
+  geom_point(color = "steelblue") + 
+  labs(title = "New Marvel characters by alignment",
+       subtitle = "(limited to characters with more than 100 appearances)",
+       y = "Count of new characters", x = "") + 
+  facet_grid(~type==c("DC","MD","VA"))
 ```
 
 ## Two links that will not load & has an error
@@ -363,7 +431,7 @@ Moco_crimes<-na.omit(crimes)
 ## Plot on Classifcation of Crime
 ```{r}
 c1<-crimes  %>%
-  filter(`Crime Name1` %in% c("Crime Against Person ","Crime Against Property","Crime Against Society")) %>%
+  filter(`Crime Name1` %in% c("Crime Against Person","Crime Against Property","Crime Against Society")) %>%
   ggplot(aes(x=`Crime Name1`, fill=`Crime Name1`))+
   geom_bar()+
   labs(title="Classification of Crime",x="", y="Total")+
