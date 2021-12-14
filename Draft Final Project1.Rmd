@@ -273,8 +273,9 @@ head(WMATA)
 ```{r}
 #Create a time series plot
 WMATA$hour <- as.numeric(gsub(":.*$", "", WMATA$time))
-WMATA$cat <- with(WMATA,  ifelse(hour >= 5 & hour<=11, "morning",
-                            ifelse(hour>11 & hour<=16, "evening", "night")))
+WMATA$timeofday <- ifelse(WMATA$hour >= 5 & WMATA$hour<=11, "morning",
+                            ifelse(WMATA$hour > 11 & WMATA$hour<=16, "afternoon",
+                            ifelse(WMATA$hour >16 & WMATA$hour <=19, "evening", "night"))) 
 WMATA
 ```
 
@@ -282,10 +283,10 @@ WMATA
 ```{r}
 p1<-WMATA  %>%
   filter(state %in% c("DC","MD","VA")) %>%
-  ggplot(aes(x=state, fill= state))+
+  ggplot(aes(x=year, fill= state))+
   geom_bar()+
   labs(title="Total of Crimes by State/District",x="State/District", y="Total")+
-  scale_fill_brewer(palette = "Dark2") + theme_minimal()
+  scale_fill_brewer(palette = "BuPu") + theme_minimal()
 p1 + theme_minimal()
 ```
 
@@ -300,6 +301,27 @@ p2<-WMATA  %>%
 p2 + theme_minimal()
 ```
 
+## Preparing the data (time)
+```{r}
+d3<- WMATA%>%
+  group_by(year, timeofday) %>%
+  dplyr::summarize(Freq=n())
+```
+ 
+##Fix Na's 
+```{r}
+d4 <-na.omit(d3)
+```
+
+## Facet
+```{r}
+ ggplot(data = d4,
+        mapping = aes(x = year, y = Freq)) +
+     geom_bar(stat="identity") +
+     facet_wrap(vars(timeofday)) +
+     theme_minimal()
+```
+
 ##Prepare the Data
 ```{r}
 DMV<-WMATA %>%
@@ -312,6 +334,25 @@ DMV<-WMATA %>%
 head(DMV)
 ```
 
+## using count 
+```{r}
+WMATA %>%
+  group_by(year,timeofday) %>%
+  summarise(n = n()) %>%
+  mutate(Freq = n/sum(n))
+```
+
+## Time Series 
+
+```{r}
+sp <- ggplot(WMATA, aes(x=year, )) + geom_point(shape=1)
+sp + facet_grid(. ~ cat)
+```
+##
+```{r}
+hp <- ggplot(tips, aes(x=total_bill)) + geom_histogram(binwidth=2,colour="white")
+```
+
 ## Getting the WMATA Geocodes
 ```{r}
 library(dplyr)
@@ -319,7 +360,7 @@ library(stringr)
 library(tidygeocoder)
 
 # Extract the street address from desc using Regex.  Extract crime description also.
-df_wmata2 <- df_wmata %>% mutate(street_addr=str_remove(desc, "[[:upper:]]{2,}.+")) %>%
+df_wmata2 <- WMATA %>% mutate(street_addr=str_remove(desc, "[[:upper:]]{2,}.+")) %>%
   mutate(crime_desc=str_extract(desc, "[[:upper:]]{2,}.+"))
 df_wmata2 <- df_wmata2 %>% mutate(full_addr=paste(street_addr,state))
 
@@ -343,10 +384,6 @@ P5
 
 ```{r}
 ggplot(DMV, aes(x=type)) + geom_histogram()
-```
-
-```{r}
-ggplot(diamonds, aes(x=price, y=color, fill=color)) +
 ```
 
 
@@ -418,6 +455,28 @@ head(df)
 
 ```
 
+```{r}
+library(dplyr)
+library(httr)
+#library(jsonlite)
+library(stringr)
+library(tidygeocoder)
+
+# Extract the street address from desc using Regex.  Extract crime description also.
+df_wmata2 <- WMATA %>% mutate(street_addr=str_remove(desc, "[[:upper:]]{2,}.+")) %>%
+  mutate(crime_desc=str_extract(desc, "[[:upper:]]{2,}.+"))
+df_wmata2 <- df_wmata2 %>% mutate(full_addr=paste(street_addr,state))
+
+#Filter on just Maryland addresses
+df_md <- df_wmata2 %>% filter(state=="MD")
+
+#Apply the geocode function to get lat/lon values
+coordinates <- df_md %>% geocode(full_addr)
+
+coordinates$census_tract <- 0
+row_count <- nrow(coordinates)
+```
+
 ## Create on plot on Income & Population(Linear Regression/ Scatterplot with Population)
 ```{r}
 
@@ -439,7 +498,7 @@ c1<-crimes  %>%
 c1 + theme_minimal()
 ```
 
-## 
+## f
 ```{r}
 
 ```
