@@ -264,6 +264,7 @@ head(WMATA)
 
 ```{r}
 WMATA$year<-as.numeric(format(WMATA$date,"%Y"))
+WMATA$month<-as.numeric(format(WMATA$date,"%m"))
 head(WMATA)
 ```
 
@@ -273,9 +274,9 @@ head(WMATA)
 ```{r}
 #Create a time series plot
 WMATA$hour <- as.numeric(gsub(":.*$", "", WMATA$time))
-WMATA$timeofday <- ifelse(WMATA$hour >= 5 & WMATA$hour<=11, "morning",
-                            ifelse(WMATA$hour > 11 & WMATA$hour<=16, "afternoon",
-                            ifelse(WMATA$hour >16 & WMATA$hour <=19, "evening", "night"))) 
+WMATA$timeofday <- ifelse(WMATA$hour >= 5 & WMATA$hour<=11, "Morning",
+                            ifelse(WMATA$hour > 11 & WMATA$hour<=16, "Afternoon",
+                            ifelse(WMATA$hour >16 & WMATA$hour <=19, "Evening", "Night"))) 
 WMATA
 ```
 
@@ -297,7 +298,7 @@ p2<-WMATA  %>%
   ggplot(aes(x=type, fill= type))+
   geom_bar()+
   labs(title="Classification of Type of Crime/ Reporting",x="Type", y="Total")+
-  scale_fill_brewer(palette = "Blues") + theme_minimal()
+  scale_fill_brewer(palette = "") + theme_minimal()
 p2 + theme_minimal()
 ```
 
@@ -316,46 +317,63 @@ d4 <-na.omit(d3)
 ## Facet
 ```{r}
  ggplot(data = d4,
-        mapping = aes(x = year, y = Freq)) +
+        mapping = aes(x = year, y = Freq, fill=timeofday)) +
      geom_bar(stat="identity") +
      facet_wrap(vars(timeofday)) +
+      scale_fill_brewer(palette = "Spectral") +
      theme_minimal()
+
 ```
 
 ##Prepare the Data
 ```{r}
 DMV<-WMATA %>%
   select(type,year)%>%
+  group_by(year, type)%>%
   filter(year >=2017  & type %in% c("ARREST","REPORT","SUMMONS/CITATION"))%>%
-  group_by(year)
+  dplyr::summarize(Freq=n())
 ```
 
 ```{r}
 head(DMV)
 ```
-
-## using count 
 ```{r}
-WMATA %>%
-  group_by(year,timeofday) %>%
-  summarise(n = n()) %>%
-  mutate(Freq = n/sum(n))
+ggplot(data = DMV,
+      mapping = aes(x = year, y = Freq)) +
+     geom_line(stat="identity") +
+     facet_wrap(vars(type)) +
+     scale_fill_brewer(palette = "Spectral") +
+     theme_minimal()
+```
+
+## Months & Count
+```{r}
+DF6<- WMATA%>%
+  group_by(month) %>%
+  dplyr::summarize(count=n())
+DF6
+```
+
+
+```{r}
+df7<-na.omit(DF6)
 ```
 
 ## Time Series 
+```{r}
+P6<- ggplot(df7, aes(x=month, fill=month)) + 
+  geom_bar(stat="identity", color="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=len-sd, ymax=len+sd), width=.2,
+                 position=position_dodge(.9))
+```
 
-```{r}
-sp <- ggplot(WMATA, aes(x=year, )) + geom_point(shape=1)
-sp + facet_grid(. ~ cat)
-```
-##
-```{r}
-hp <- ggplot(tips, aes(x=total_bill)) + geom_histogram(binwidth=2,colour="white")
-```
 
 ## Getting the WMATA Geocodes
 ```{r}
 library(dplyr)
+library(httr)
+#library(jsonlite)
 library(stringr)
 library(tidygeocoder)
 
@@ -366,11 +384,42 @@ df_wmata2 <- df_wmata2 %>% mutate(full_addr=paste(street_addr,state))
 
 #Filter on just Maryland addresses
 df_md <- df_wmata2 %>% filter(state=="MD")
-
-#Apply the geocode function to get lat/lon values
-coordinates <- df_md %>% geocode(full_addr)
 ```
 
+
+```{r}
+#Apply the geocode function to get lat/lon values
+coordinates <- df_md %>% geocode(full_addr, method="arcgis")
+
+coordinates$census_tract <- 0
+row_count <- nrow(coordinates)
+
+# Get FIPS code from FCC API based on lat/lon
+fcc_url = "https://geo.fcc.gov/api/census/block/find?"
+headers = "'Content-Type':'application/json'"
+unique_record = 0
+
+for (row in 1:row_count) {
+  if (!is.na(coordinates$lat[row]) & coordinates$time[row] != unique_record) {
+   
+    full_url <- paste0(fcc_url, "latitude=", coordinates$lat[row],
+                       "&longitude=", coordinates$long[row], "&censusYear=2010&format=json")
+    fcc <- GET(full_url)
+    fcc_parsed <- content(fcc, as="parsed")
+    try(coordinates$census_tract[row] <- fcc_parsed$Block$FIPS, TRUE)
+    
+    print(full_url)
+    print(coordinates$census_tract[row])
+    unique_record = coordinates$time[row]
+  }
+  Sys.sleep(1)
+}
+
+census_info <- GET("https://api.census.gov/data/2019/acs/acs5?get=NAME,B01003_001E,B02001_002E,B02001_003E&for=block%20group:*&in=state:24&in=county:031&in=tract:*")
+df_census <- fromJSON(content(census_info, as="text"))
+
+df_census
+```
 
 ```{r}
 P5<- ggplot(DMV, aes(y =year, fill = factor(type))) +
